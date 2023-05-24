@@ -11,7 +11,7 @@ class SemanticNetsAgent:
         #side of the river to the right.
         #
         #If it is impossible to move the animals over according
-        #to #the rules of the problem, return an empty list of
+        #to the rules of the problem, return an empty list of
         #moves.
         pass
 
@@ -27,6 +27,8 @@ class SemanticNetsAgent:
 
             def to_tuple(self):
                 return (self.left_sheep, self.left_wolves, self.left_boat, self.right_sheep, self.right_wolves, self.right_boat)
+            def __eq__(self, other):
+                return self.left_sheep == other.left_sheep and self.left_wolves == other.left_wolves and self.left_boat == other.left_boat and self.right_sheep == other.right_sheep and self.right_wolves == other.right_wolves and self.right_boat == other.right_boat
 
             def goal_test(self):
                 return self.left_sheep == 0 and self.left_wolves == 0 and self.left_boat == 0 and self.right_sheep == initial_sheep and self.right_wolves == initial_wolves and self.right_boat == 1
@@ -45,18 +47,22 @@ class SemanticNetsAgent:
         def get_children(state):
             children = []
             if state.left_boat == 1:
-                for i in range(0, 2):
-                    for j in range(0, 2):
+                for i in range(0, 3):
+                    for j in range(0, 3):
                         if i == 0 and j == 0:
+                            continue
+                        if i + j > 2:
                             continue
                         new_state = State(state.left_sheep - i, state.left_wolves - j, 0, state.right_sheep + i, state.right_wolves + j, 1)
                         if new_state.valid_state():
                             new_state.parent = state
                             children.append(new_state)
             else:
-                for i in range(0, 2):
-                    for j in range(0, 2):
+                for i in range(0, 3):
+                    for j in range(0, 3):
                         if i == 0 and j == 0:
+                            continue
+                        if i + j > 2:
                             continue
                         new_state = State(state.left_sheep + i, state.left_wolves + j, 1, state.right_sheep - i, state.right_wolves - j, 0)
                         if new_state.valid_state():
@@ -88,7 +94,9 @@ class SemanticNetsAgent:
                 state_path.append(state.to_tuple())
                 state = state.parent
             path.reverse()
-            #print("PATH:"+str(state_path))
+            # state_path.append(state.to_tuple())
+            # state_path.reverse()
+            # print("PATH:"+str(state_path))
             return path
 
         solution = bfs()
@@ -96,6 +104,7 @@ class SemanticNetsAgent:
             return get_path(solution)
         else:
             return []
+
 
 
 
