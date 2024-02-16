@@ -11,6 +11,7 @@
 # Install Pillow and uncomment this line to access image processing.
 from PIL import Image, ImageChops
 import numpy as np
+import pandas as pd
 
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
@@ -30,7 +31,78 @@ class Agent:
     #
     # Make sure to return your answer *as an integer* at the end of Solve().
     # Returning your answer as a string may cause your program to crash.
-    def Solve(self,problem):
+    def prepare_dataset(self, problem):
+        if problem.problemType = '2x2':
+            A = Image.open(problem.figures["A"].visualFilename)
+            B = Image.open(problem.figures["B"].visualFilename)
+            C = Image.open(problem.figures["C"].visualFilename)
+            one = Image.open(problem.figures["1"].visualFilename)
+            two = Image.open(problem.figures["2"].visualFilename)
+            three = Image.open(problem.figures["3"].visualFilename)
+            four = Image.open(problem.figures["4"].visualFilename)
+            five = Image.open(problem.figures["5"].visualFilename)
+            six = Image.open(problem.figures["6"].visualFilename)
+
+            A = np.array(A)
+            B = np.array(B)
+            C = np.array(C)
+            one = np.array(one)
+            two = np.array(two)
+            three = np.array(three)
+            four = np.array(four)
+            five = np.array(five)
+            six = np.array(six)
+            return {'problem_name': problem.problemName,
+                    'correct_answer': problem.correctAnswer,
+                    'given': [A, B, C],
+                    'choices': [one, two, three, four, five, six]}
+
+        elif problem.problemType = '3x3':
+            A = Image.open(problem.figures["A"].visualFilename)
+            B = Image.open(problem.figures["B"].visualFilename)
+            C = Image.open(problem.figures["C"].visualFilename)
+            D = Image.open(problem.figures["D"].visualFilename)
+            E = Image.open(problem.figures["E"].visualFilename)
+            F = Image.open(problem.figures["F"].visualFilename)
+            G = Image.open(problem.figures["G"].visualFilename)
+            H = Image.open(problem.figures["H"].visualFilename)
+
+            one = Image.open(problem.figures["1"].visualFilename)
+            two = Image.open(problem.figures["2"].visualFilename)
+            three = Image.open(problem.figures["3"].visualFilename)
+            four = Image.open(problem.figures["4"].visualFilename)
+            five = Image.open(problem.figures["5"].visualFilename)
+            six = Image.open(problem.figures["6"].visualFilename)
+            seven = Image.open(problem.figures["7"].visualFilename)
+            eight = Image.open(problem.figures["8"].visualFilename)
+
+            A = np.array(A)
+            B = np.array(B)
+            C = np.array(C)
+            D = np.array(D)
+            E = np.array(E)
+            F = np.array(F)
+            G = np.array(G)
+            H = np.array(H)
+
+            one = np.array(one)
+            two = np.array(two)
+            three = np.array(three)
+            four = np.array(four)
+            five = np.array(five)
+            six = np.array(six)
+            seven = np.array(seven)
+            eight = np.array(eight)
+
+            return {'problem_name': problem.problemName,
+                    'correct_answer': problem.correctAnswer,
+                    'given': [A, B, C, D, E, F, G, H],
+                    'choices': [one, two, three, four, five, six, seven, eight]}
+        else:
+            print("Error: Problem {}: type not recognized".format(problem.problemName))
+            return -1
+
+    def Solve(self, problem):
         if problem.problemType == "2x2":
             return self.solve2x2(problem)
         elif problem.problemType == "3x3":
@@ -41,61 +113,6 @@ class Agent:
 
     ### Set of transformation functions ###
 
-    ## 1. Flippint functions ##
-    def _flipHorizontal(self, image):
-        return image.transpose(Image.FLIP_LEFT_RIGHT)
-
-    def _flipVertical(self, image):
-        return image.transpose(Image.FLIP_TOP_BOTTOM)
-
-    def _flipDiagonal(self, image):
-        return image.transpose(Image.TRANSPOSE)
-
-    def _flipAntiDiagonal(self, image):
-        return image.transpose(Image.TRANSVERSE)
-
-    ## 2. Rotation functions ##
-
-    def _rotate90(self, image):
-        return image.transpose(Image.ROTATE_90)
-
-    def _rotate180(self, image):
-        return image.transpose(Image.ROTATE_180)
-
-    def _rotate270(self, image):
-        return image.transpose(Image.ROTATE_270)
-
-    ## 3. Scaling functions ##
-    def _scaleUp(self, image):
-        return image.resize((image.size[0] * 2, image.size[1] * 2))
-
-    def _scaleDown(self, image):
-        return image.resize((image.size[0] // 2, image.size[1] // 2))
-
-    ## 4. Translation functions ##
-    def _translateRight(self, image):
-        return image.transform(image.size, Image.AFFINE, (1, 0, image.size[0] // 2, 0, 1, 0))
-
-    def _translateLeft(self, image):
-        return image.transform(image.size, Image.AFFINE, (1, 0, -image.size[0] // 2, 0, 1, 0))
-
-    ## 5. Reflection functions ##
-    def _reflectHorizontal(self, image):
-        return image.transform(image.size, Image.AFFINE, (1, 0, 0, 0, -1, image.size[1]))
-    def _difference2x2(self, image1, image2):
-        return ImageChops.difference(image1, image2)
-
-    def _add(self, image1, image2):
-        return ImageChops.add(image1, image2)
-
-    def _subtract(self, image1, image2):
-        return ImageChops.subtract(image1, image2)
-
-    def _multiply(self, image1, image2):
-        return ImageChops.multiply(image1, image2)
-
-    def _rotate(self, image, angle):
-        return image.rotate(angle)
     def solve2x2(self, problem):
         # Get the visual representations of the figures
         A = Image.open(problem.figures["A"].visualFilename)

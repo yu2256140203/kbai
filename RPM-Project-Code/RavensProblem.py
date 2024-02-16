@@ -49,6 +49,6 @@ class RavensProblem:
         # Relationships are present across rows and down columns: A is to B is to
         # C as D is to E is to F as G is to H is to one of the answer choices. A is
         # to D is G as B is to E is to H as C is to F is to one of the answer
-        # choices. The answer choices are named 1 through 6.
+        # choices. The answer choices are named 1 through 8.
         self.figures={}
 

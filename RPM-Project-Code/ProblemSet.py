@@ -10,6 +10,7 @@ import re
 import os
 import json
 from RavensFigure import RavensFigure
+from RavensObject import RavensObject
 from RavensProblem import RavensProblem
 
 # A list of RavensProblems within one set.

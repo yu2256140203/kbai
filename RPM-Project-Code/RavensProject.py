@@ -35,9 +35,9 @@ def solve():
         sets.append(ProblemSet(line))                       # We will use a fresh copy of all problem sets when grading.
         line=getNextLine(r)                                 # We will also use some problem sets not given in advance.
 
-    # Initializing problem-solving agent from Agent.java
+    # Initializing problem-solving agent from Agent.py
     agent=Agent()   # Your agent will be initialized with its default constructor.
-                    # You may modify the default constructor in Agent.java
+                    # You may modify the default constructor in Agent.py
 
     # Running agent against each problem set
     with open("AgentAnswers.csv","w") as results:     # Results will be written to ProblemResults.csv.
