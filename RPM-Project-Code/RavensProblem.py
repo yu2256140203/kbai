@@ -11,7 +11,7 @@ class RavensProblem:
     # dictionary representing the figures in the problem.
     #
     # Your agent does not need to use this method.
-    def __init__(self, name, problemType, problemSetName, hasVisual, hasVerbal):
+    def __init__(self, name, problemType, problemSetName, hasVisual, hasVerbal, correctAnswer):
         # The name of the problem, typically the set followed by an identifier,
         # such as "Basic Problem B-02".
         self.name=name
@@ -27,6 +27,9 @@ class RavensProblem:
 
         # Whether or not the problem has verbal representations available.
         self.hasVerbal=hasVerbal
+
+        # The correct answer to the problem. The answer will be a number 1-6.
+        self.correctAnswer=correctAnswer
 
         # The dictionary representing the RavensFigures of the problem. The
         # key for each figure is the name of the figure. For example:

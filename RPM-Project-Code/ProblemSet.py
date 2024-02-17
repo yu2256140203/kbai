@@ -45,6 +45,9 @@ class ProblemSet:
 
     def loadProblem(self, problemName):
         data_filename = "Problems" + os.sep + self.name + os.sep + problemName + os.sep + "ProblemData.txt"
+        data_problem_answer_filename = "Problems" + os.sep + self.name + os.sep + problemName + os.sep + "ProblemAnswer.txt"
+        with open(data_problem_answer_filename) as r:
+            correctAnswer = int(self.getNextLine(r))
 
         with open(data_filename) as r:
             problemType=self.getNextLine(r)
@@ -52,7 +55,7 @@ class ProblemSet:
             hasVisual=self.getNextLine(r)=="true"
             hasVerbal=self.getNextLine(r)=="true"
 
-            newProblem=RavensProblem(problemName, problemType, self.name, hasVisual, hasVerbal)
+            newProblem=RavensProblem(problemName, problemType, self.name, hasVisual, hasVerbal, correctAnswer)
             if newProblem.hasVerbal:
                 figures=[]
                 currentFigure=None
