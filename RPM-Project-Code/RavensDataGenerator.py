@@ -32,6 +32,7 @@ class DataGenerator:
             four = np.array(four)
             five = np.array(five)
             six = np.array(six)
+
             return {'problem_name': problem.name,
                     'correct_answer': problem.correctAnswer,
                     'A': A, 'B': B, 'C': C,
@@ -82,80 +83,44 @@ class DataGenerator:
             print("Error: Problem {}: type not recognized".format(problem.name))
             return -1
 
-    def calculate_statistical_features(self, vector):
-        # vector: a flattened relationship matrix
-        # calculate the mean, std, skewness, kurtosis, and entropy of the vector
-        mean = np.mean(vector)
-        std = np.std(vector)
-        skewness = np.mean((vector - mean) ** 3) / (std ** 3)
-
-        return [mean, std, skewness]
+    def distance(self, npmatrix1, npmatrix2):
+        # (L2 norm) distance between two matrices
+        return np.linalg.norm(npmatrix1 - npmatrix2)
 
     def vectorize(self, problem):
         # independent variable y: 1 being the correct answer, 0 being the incorrect answer
         # dependent variables:
         #    x_problem: problem-specific relationships represents by the 3 statistics
         #    x_choice: choice-specific relationships represents by the 3 statistics
-
+        res = []
         data = self.dataset_from_problem(problem)
 
         if problem.problemType == '2x2':
-            ys = []
-            x_problem = []
-            x_choice = []
-
+            avg = np.average([data['A'], data['B'], data['C']])
+            std = np.std([data['A'], data['B'], data['C']])
             for i in range(1, 7):
                 y = data['correct_answer'] == i
-                ys.append(y)
-                xhs.append( (data['C'] - data[str(i)]).flatten() )
-                xvs.append( (data['B'] - data[str(i)]).flatten() )
-
+                x = np.mean((data[str(i)] - avg))
+                x_std = np.std(data[str(i)] - avg)
+                if y == 1: # create 5x records of the correct answer to balance the dataset
+                    res += [(y, x, x_std)] * 5
+                else:
+                    res += [(y, x, x_std)]
 
         elif problem.problemType == '3x3':
-            ys = []
-            re = []
-            xvs = []
-
+            avg = np.average([data['A'], data['B'], data['C'], data['D'], data['E'], data['F'], data['G'], data['H']])
             for i in range(1, 9):
                 y = data['correct_answer'] == i
-                if y == 1:  # create 7x records of the correct answer to balance the dataset
-                    for _ in range(7):
-                        ys.append(y)
-                        xhs.append((data['A'] - data['B']).flatten())
-                        xhs.append((data['B'] - data['C']).flatten())
-                        xhs.append((data['D'] - data['E']).flatten())
-                        xhs.append((data['E'] - data['F']).flatten())
-                        xhs.append((data['G'] - data['H']).flatten())
-
-                        xvs.append((data['A'] - data['D']).flatten())
-                        xvs.append((data['D'] - data['G']).flatten())
-                        xvs.append((data['B'] - data['E']).flatten())
-                        xvs.append((data['E'] - data['H']).flatten())
-                        xvs.append((data['C'] - data['F']).flatten())
-
-                        xhs.append( (data['H'] - data[str(i)]).flatten() )
-                        xvs.append( (data['F'] - data[str(i)]).flatten() )
+                x = np.mean((data[str(i)] - avg))
+                x_std = np.std(data[str(i)] - avg)
+                if y == 1: # create 7x records of the correct answer to balance the dataset
+                    res += [(y, x, x_std)] * 7
                 else:
-                    ys.append(y)
-                    xhs.append((data['A'] - data['B']).flatten())
-                    xhs.append((data['B'] - data['C']).flatten())
-                    xhs.append((data['D'] - data['E']).flatten())
-                    xhs.append((data['E'] - data['F']).flatten())
-                    xhs.append((data['G'] - data['H']).flatten())
-
-                    xvs.append((data['A'] - data['D']).flatten())
-                    xvs.append((data['D'] - data['G']).flatten())
-                    xvs.append((data['B'] - data['E']).flatten())
-                    xvs.append((data['E'] - data['H']).flatten())
-                    xvs.append((data['C'] - data['F']).flatten())
-
-                    xhs.append( (data['H'] - data[str(i)]).flatten() )
-                    xvs.append( (data['F'] - data[str(i)]).flatten() )
+                    res += [(y, x, x_std)]
         else:
             print("Error: Problem {}: type not recognized".format(problem.problemName))
-        xs_raw = np.vstack(xhs + xvs)
-        xs = np.apply_along_axis(lambda x: self.calculate_statistical_features(x), axis = 1, arr=xs_raw)
-        return (ys, xs)
+        df = pd.DataFrame(res, columns=['y', 'x', 'x_std'])
+        return df
 
     def prepare_dataset(self):
         sets = []  # The variable 'sets' stores multiple problem sets.
@@ -168,14 +133,11 @@ class DataGenerator:
             sets.append(ProblemSet(line))  # We will use a fresh copy of all problem sets when grading.
             line = getNextLine(r)
 
-        ys, xs = [], []
+        df = pd.DataFrame(columns = ['y', 'x', 'x_std'])
         for set in sets:
             for problem in set.problems:  # Your agent will solve one problem at a time.
-                tmp = self.vectorize(problem)
-                ys += tmp[0]
-                xs.append( tmp[1] )
-        xs = np.vstack(xs)
-        df = pd.DataFrame(np.hstack(ys, xs), columns=['y', 'x_mean', 'x_variance', 'x_skewness', 'x_kurtosis', 'x_entropy'])
+                _tmp = self.vectorize(problem)
+                df = pd.concat([df, _tmp], ignore_index=True)
         df.to_csv("dataset.csv", index=False)
 
 if __name__ == "__main__":
