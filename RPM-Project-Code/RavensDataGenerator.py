@@ -2,6 +2,7 @@ import os
 from PIL import Image, ImageChops
 import numpy as np
 import pandas as pd
+import cv2
 from ProblemSet import ProblemSet
 
 def getNextLine(r):
@@ -93,33 +94,25 @@ class DataGenerator:
         #    x_problem: problem-specific relationships represents by the 3 statistics
         #    x_choice: choice-specific relationships represents by the 3 statistics
         res = []
+        columns = ['problem_name', 'y', 'x']
         data = self.dataset_from_problem(problem)
+        name = data['problem_name']
 
         if problem.problemType == '2x2':
-            avg = np.average([data['A'], data['B'], data['C']])
-            std = np.std([data['A'], data['B'], data['C']])
             for i in range(1, 7):
                 y = data['correct_answer'] == i
-                x = np.mean((data[str(i)] - avg))
-                x_std = np.std(data[str(i)] - avg)
+                x = self.distance(data['A'] - data['B'], data['C'] - data[str(i)] ) + \
+                    self.distance(data['A'] - data['C'], data['B'] - data[str(i)] )
                 if y == 1: # create 5x records of the correct answer to balance the dataset
-                    res += [(y, x, x_std)] * 5
+                    res += [(name, y, x)] * 5
                 else:
-                    res += [(y, x, x_std)]
+                    res += [(name, y, x)]
 
         elif problem.problemType == '3x3':
-            avg = np.average([data['A'], data['B'], data['C'], data['D'], data['E'], data['F'], data['G'], data['H']])
-            for i in range(1, 9):
-                y = data['correct_answer'] == i
-                x = np.mean((data[str(i)] - avg))
-                x_std = np.std(data[str(i)] - avg)
-                if y == 1: # create 7x records of the correct answer to balance the dataset
-                    res += [(y, x, x_std)] * 7
-                else:
-                    res += [(y, x, x_std)]
+            pass
         else:
             print("Error: Problem {}: type not recognized".format(problem.problemName))
-        df = pd.DataFrame(res, columns=['y', 'x', 'x_std'])
+        df = pd.DataFrame(res, columns=columns)
         return df
 
     def prepare_dataset(self):
