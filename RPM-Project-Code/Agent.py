@@ -12,13 +12,13 @@
 import os
 from PIL import Image, ImageChops
 import numpy as np
-import pandas as pd
 from enum import Enum
 import cv2
 from ProblemSet import ProblemSet
 
+DEBUG = 0
 
-def l2distance(self, np_image1, np_image2):
+def l2distance(np_image1, np_image2):
     return np.linalg.norm(np_image1 - np_image2)
 class Shape(Enum):
     triangle = 1,
@@ -44,7 +44,7 @@ class TransformationSuggester:
         return np_image.fill(color)
 
     def _rotate(self, np_image, angle = 90):
-        return np.rotate(np_image, angle)
+        return np.rot90(np_image, k = int(angle/90))
 
     def suggest_transformation(self, np_image1, np_image2):
         # Compare the two images and suggest a transformation
@@ -52,14 +52,14 @@ class TransformationSuggester:
         min_distance = float('inf')
         for trans in Transformation:
             if trans == Transformation.rotate:
-                for angle in [0, 90, 180, 270]:
+                for angle in [90, 180, 270]:
                     _d = l2distance(self._rotate(np_image1, angle), np_image2)
                     if _d < min_distance:
                         min_distance = _d
                         res = (TransformationSuggester._rotate, {'angle': angle})
             elif trans == Transformation.flip:
                 for axis in [0, 1]:
-                    np_image1_d = l2distance(self._flip(np_image1, axis), np_image2)
+                    _d = l2distance(self._flip(np_image1, axis), np_image2)
                     if _d < min_distance:
                         min_distance = _d
                         res = (TransformationSuggester._flip, {'axis': axis})
@@ -68,8 +68,9 @@ class TransformationSuggester:
         return res
 
     def apply_transformation(self, np_image, func_trans, *args):
-        np_image = func_trans(np_image, *args)
-        return np_image
+        res_image = func_trans(self, np_image, **args[0])
+        # Image.fromarray(res_image).save('transformed.png')
+        return res_image
 
 
 
@@ -104,8 +105,8 @@ class Agent:
     # Make sure to return your answer *as an integer* at the end of Solve().
     # Returning your answer as a string may cause your program to crash.
 
-    def solve(self, problem):
-        # Your code goes here
+    def getIdealImage(self, problem):
+        # Get the ideal image from the problem
         images = self.dataset_from_problem(problem)
         if problem.problemType == '2x2':
             t = TransformationSuggester()
@@ -114,13 +115,36 @@ class Agent:
             idealImages = []
             idealImages.append(t.apply_transformation(images['C'], self.ops['AB']['action'][0], self.ops['AB']['action'][1]))
             idealImages.append(t.apply_transformation(images['B'], self.ops['AC']['action'][0], self.ops['AC']['action'][1]))
+            # [Image.fromarray(idealImages[_]).save('idealImage_%s.png' % _ ) for _ in range(len(idealImages))]
+            return idealImages
+    def find_best_match(self, problem, idealImages):
+        # Find the best match
+        best_matches = []
+        images = self.dataset_from_problem(problem)
+        min_distance = float('inf')
+        #distances = [l2distance(idealImages[0], images[str(i)]) + l2distance(idealImages[1], images[str(i)]) for i in range(1, 7)]
+        distances = [l2distance( images[str(i)],idealImages[0]) + l2distance( images[str(i)],idealImages[1]) for i in
+                     range(1, 7)]
 
+        #print("%s: Distances %s" % (problem.name, distances))
+        best_matches = sorted(range(1, len(distances)+1), key=lambda i: distances[i-1])
+        print("%s: Best matches %s" % (problem.name, best_matches))
+        return best_matches
 
+    def Solve(self, problem):
+        # Your code goes here
+        if problem.problemType == '3x3':
+            return 1
+        # get the ideal image
+        goalImages = self.getIdealImage(problem)
+        # find the best match
+        best_matches = self.find_best_match(problem, goalImages)
+        return best_matches[0]
 
-        return -1
 
     def dataset_from_problem(self, problem):
         if problem.problemType == '2x2':
+            gray_image = cv2.imread(problem.figures["A"].visualFilename, cv2.IMREAD_GRAYSCALE)
             A = Image.open(problem.figures["A"].visualFilename)
             B = Image.open(problem.figures["B"].visualFilename)
             C = Image.open(problem.figures["C"].visualFilename)
@@ -141,8 +165,8 @@ class Agent:
             five = np.array(five)
             six = np.array(six)
 
+
             return {'problem_name': problem.name,
-                    'correct_answer': problem.correctAnswer,
                     'A': A, 'B': B, 'C': C,
                     '1': one, '2': two, '3': three, '4': four, '5': five, '6': six}
 
@@ -184,7 +208,6 @@ class Agent:
             eight = np.array(eight)
 
             return {'problem_name': problem.name,
-                    'correct_answer': problem.correctAnswer,
                     'A': A, 'B': B, 'C': C, 'D': D, 'E': E, 'F': F, 'G': G, 'H': H,
                     '1': one, '2': two, '3': three, '4': four, '5': five, '6': six, '7': seven, '8': eight}
         else:
@@ -218,6 +241,6 @@ class Agent:
 if __name__ == "__main__":
     agent = Agent()
     problem_set = ProblemSet("Basic Problems B")
-    problem = problem_set.problems[1]
-    agent.solve(problem)
+    problem = problem_set.problems[3]
+    ans = agent.Solve(problem)
     print("Done")
