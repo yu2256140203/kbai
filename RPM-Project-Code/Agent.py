@@ -144,69 +144,36 @@ class Agent:
 
     def dataset_from_problem(self, problem):
         if problem.problemType == '2x2':
-            gray_image = cv2.imread(problem.figures["A"].visualFilename, cv2.IMREAD_GRAYSCALE)
-            A = Image.open(problem.figures["A"].visualFilename)
-            B = Image.open(problem.figures["B"].visualFilename)
-            C = Image.open(problem.figures["C"].visualFilename)
-            one = Image.open(problem.figures["1"].visualFilename)
-            two = Image.open(problem.figures["2"].visualFilename)
-            three = Image.open(problem.figures["3"].visualFilename)
-            four = Image.open(problem.figures["4"].visualFilename)
-            five = Image.open(problem.figures["5"].visualFilename)
-            six = Image.open(problem.figures["6"].visualFilename)
-
-            A = np.array(A)
-            B = np.array(B)
-            C = np.array(C)
-            one = np.array(one)
-            two = np.array(two)
-            three = np.array(three)
-            four = np.array(four)
-            five = np.array(five)
-            six = np.array(six)
-
-
+            A = cv2.imread(problem.figures["A"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            B = cv2.imread(problem.figures["B"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            C = cv2.imread(problem.figures["C"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            one = cv2.imread(problem.figures["1"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            two = cv2.imread(problem.figures["2"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            three = cv2.imread(problem.figures["3"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            four = cv2.imread(problem.figures["4"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            five = cv2.imread(problem.figures["5"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            six = cv2.imread(problem.figures["6"].visualFilename, cv2.IMREAD_GRAYSCALE)
             return {'problem_name': problem.name,
                     'A': A, 'B': B, 'C': C,
                     '1': one, '2': two, '3': three, '4': four, '5': five, '6': six}
 
         elif problem.problemType == '3x3':
-            A = Image.open(problem.figures["A"].visualFilename)
-            B = Image.open(problem.figures["B"].visualFilename)
-            C = Image.open(problem.figures["C"].visualFilename)
-            D = Image.open(problem.figures["D"].visualFilename)
-            E = Image.open(problem.figures["E"].visualFilename)
-            F = Image.open(problem.figures["F"].visualFilename)
-            G = Image.open(problem.figures["G"].visualFilename)
-            H = Image.open(problem.figures["H"].visualFilename)
-
-            one = Image.open(problem.figures["1"].visualFilename)
-            two = Image.open(problem.figures["2"].visualFilename)
-            three = Image.open(problem.figures["3"].visualFilename)
-            four = Image.open(problem.figures["4"].visualFilename)
-            five = Image.open(problem.figures["5"].visualFilename)
-            six = Image.open(problem.figures["6"].visualFilename)
-            seven = Image.open(problem.figures["7"].visualFilename)
-            eight = Image.open(problem.figures["8"].visualFilename)
-
-            A = np.array(A)
-            B = np.array(B)
-            C = np.array(C)
-            D = np.array(D)
-            E = np.array(E)
-            F = np.array(F)
-            G = np.array(G)
-            H = np.array(H)
-
-            one = np.array(one)
-            two = np.array(two)
-            three = np.array(three)
-            four = np.array(four)
-            five = np.array(five)
-            six = np.array(six)
-            seven = np.array(seven)
-            eight = np.array(eight)
-
+            A = cv2.imread(problem.figures["A"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            B = cv2.imread(problem.figures["B"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            C = cv2.imread(problem.figures["C"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            D = cv2.imread(problem.figures["D"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            E = cv2.imread(problem.figures["E"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            F = cv2.imread(problem.figures["F"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            G = cv2.imread(problem.figures["G"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            H = cv2.imread(problem.figures["H"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            one = cv2.imread(problem.figures["1"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            two = cv2.imread(problem.figures["2"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            three = cv2.imread(problem.figures["3"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            four = cv2.imread(problem.figures["4"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            five = cv2.imread(problem.figures["5"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            six = cv2.imread(problem.figures["6"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            seven = cv2.imread(problem.figures["7"].visualFilename, cv2.IMREAD_GRAYSCALE)
+            eight = cv2.imread(problem.figures["8"].visualFilename, cv2.IMREAD_GRAYSCALE)
             return {'problem_name': problem.name,
                     'A': A, 'B': B, 'C': C, 'D': D, 'E': E, 'F': F, 'G': G, 'H': H,
                     '1': one, '2': two, '3': three, '4': four, '5': five, '6': six, '7': seven, '8': eight}
